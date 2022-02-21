@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { greeting: "Hello World!" }
+  const templateVars = { urls: urlDatabase }
   res.render('urls_index', templateVars);
 });
 
