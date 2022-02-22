@@ -22,10 +22,10 @@ const generateRandomString = function() {
   return randomString;
 };
 
+// Considering the home directory incomplete, for now redirect to URL summary page
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect('/urls');
 });
-
 
 app.post("/login", (req,res) => {
   const username = req.body["username"];
@@ -38,6 +38,7 @@ app.post("/logout", (req,res) => {
   res.redirect("/urls");
 });
 
+// Display users URL's summary
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
@@ -46,6 +47,7 @@ app.get("/urls", (req, res) => {
   res.render('urls_index', templateVars);
 });
 
+// New URL submitted via form
 app.post("/urls", (req,res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
@@ -53,6 +55,7 @@ app.post("/urls", (req,res) => {
   res.redirect(`/u/${shortURL}`);
 });
 
+// Generate form for user to submit new URL
 app.get("/urls/new", (req,res) => {
   const templateVars = {
     username: req.cookies.username
@@ -66,6 +69,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect('/urls');
 });
 
+// Redirects to edit link page
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if (!(shortURL in urlDatabase)) {
@@ -81,12 +85,14 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+// Update longURL corresponding to id => (shortURL)
 app.post("/urls/:id", (req,res) => {
   const id = req.params.id;
   urlDatabase[id] = req.body.newLongURL;
   res.redirect('/urls');
 });
 
+// Handle all invalid path requests
 app.get("/*", (req,res) => {
   res.statusCode = 404;
   res.write("<h1>404 Page Not Found</h1>");
