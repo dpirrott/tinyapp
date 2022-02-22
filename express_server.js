@@ -50,14 +50,23 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  console.log("Short URL: ", shortURL);
-  console.log("urlDatabase: ", urlDatabase);
   if (!(shortURL in urlDatabase)) {
     res.redirect('/*');
   } else {
     const longURL = urlDatabase[shortURL];
-    res.redirect('/urls');
+    const newURL = {
+      shortURL: shortURL,
+      longURL: longURL
+    }
+    console.log(`ShortURL: ${shortURL} --- LongURL: ${longURL}`);
+    res.render('urls_show', newURL);
   }
+});
+
+app.post("/urls/:id", (req,res) => {
+  const id = req.params.id;
+  urlDatabase[id] = req.body.newLongURL
+  res.redirect('/urls');
 });
 
 app.get("/*", (req,res) => {
