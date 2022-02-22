@@ -41,21 +41,29 @@ app.get("/urls/new", (req,res) => {
   res.render('urls_new');
 });
 
+app.post("/urls/:shortURL/delete", (req,res) => {
+  const shortURL = req.params.shortURL;
+  console.log(shortURL);
+  delete urlDatabase[shortURL];
+  res.redirect('/urls')
+});
+
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
+  console.log("Short URL: ", shortURL);
+  console.log("urlDatabase: ", urlDatabase);
   if (!(shortURL in urlDatabase)) {
     res.redirect('/*');
   } else {
     const longURL = urlDatabase[shortURL];
-  console.log(urlDatabase);
-  res.redirect(longURL);
+    res.redirect('/urls');
   }
 });
 
 app.get("/*", (req,res) => {
   console.log("Someone tried going where they don't belong ;)")
   res.statusCode = 404;
-  res.write("404 Page Not Found");
+  res.write("<h1>404 Page Not Found</h1>");
   res.end();
 });
 
