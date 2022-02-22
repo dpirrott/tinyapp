@@ -43,9 +43,20 @@ app.get("/urls/new", (req,res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  if (!(shortURL in urlDatabase)) {
+    res.redirect('/*');
+  } else {
+    const longURL = urlDatabase[shortURL];
   console.log(urlDatabase);
   res.redirect(longURL);
+  }
+});
+
+app.get("/*", (req,res) => {
+  console.log("Someone tried going where they don't belong ;)")
+  res.statusCode = 404;
+  res.write("404 Page Not Found");
+  res.end();
 });
 
 app.listen(PORT, () => {
