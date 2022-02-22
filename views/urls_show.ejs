@@ -17,9 +17,9 @@
     <div class="card-footer text-muted">
       <div class="card-header">
         <h1>Edit</h1>
-        <form method="POST" class="form-control" action="/urls/<%= shortURL %>" >
+        <form method="POST" class="form-inline justify-content-center" action="/urls/<%= shortURL %>" >
           <label for="newLongURL">New URL: </label>
-          <input name="newLongURL" type="text">
+          <input class="form-control" name="newLongURL" type="text">
           <button class="btn btn-primary">Submit</button>
         </form>
       </div>

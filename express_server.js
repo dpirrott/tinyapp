@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({extended: true}), cookieParser());
 
@@ -13,14 +13,14 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString() {
+const generateRandomString = function() {
   let randomString = "";
   const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < 6; i++) {
     randomString += chars[Math.floor(Math.random() * chars.length)];
   }
   return randomString;
-}
+};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -35,11 +35,11 @@ app.post("/login", (req,res) => {
 
 app.post("/logout", (req,res) => {
   res.clearCookie("username");
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     urls: urlDatabase,
     username: req.cookies.username
   };
@@ -54,7 +54,7 @@ app.post("/urls", (req,res) => {
 });
 
 app.get("/urls/new", (req,res) => {
-  const templateVars = { 
+  const templateVars = {
     username: req.cookies.username
   };
   res.render('urls_new', templateVars);
@@ -63,7 +63,7 @@ app.get("/urls/new", (req,res) => {
 app.post("/urls/:shortURL/delete", (req,res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
-  res.redirect('/urls')
+  res.redirect('/urls');
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -76,20 +76,18 @@ app.get("/u/:shortURL", (req, res) => {
       shortURL: shortURL,
       longURL: longURL,
       username: req.cookies.username
-    }
-    console.log(`ShortURL: ${shortURL} --- LongURL: ${longURL}`);
+    };
     res.render('urls_show', templateVars);
   }
 });
 
 app.post("/urls/:id", (req,res) => {
   const id = req.params.id;
-  urlDatabase[id] = req.body.newLongURL
+  urlDatabase[id] = req.body.newLongURL;
   res.redirect('/urls');
 });
 
 app.get("/*", (req,res) => {
-  console.log("Someone tried going where they don't belong ;)")
   res.statusCode = 404;
   res.write("<h1>404 Page Not Found</h1>");
   res.end();
