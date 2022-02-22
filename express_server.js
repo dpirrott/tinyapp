@@ -48,7 +48,10 @@ app.post("/urls", (req,res) => {
 });
 
 app.get("/urls/new", (req,res) => {
-  res.render('urls_new');
+  const templateVars = { 
+    username: req.cookies.username
+  };
+  res.render('urls_new', templateVars);
 });
 
 app.post("/urls/:shortURL/delete", (req,res) => {
@@ -65,7 +68,8 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[shortURL];
     const templateVars = {
       shortURL: shortURL,
-      longURL: longURL
+      longURL: longURL,
+      username: req.cookies.username
     }
     console.log(`ShortURL: ${shortURL} --- LongURL: ${longURL}`);
     res.render('urls_show', templateVars);
