@@ -12,7 +12,9 @@
       <div class="navbar-nav">
         <% if (username) {%>
         <p>Logged in as: <%= username %></p>
-        
+        <form class="form-inline" method="POST" action="/logout">
+          <button class="btn btn-outline-secondary">Logout</button>
+        </form>
         <% } else { %>
         <form method="post" class="form-inline" action="/login">
           <input class="form-control" type="text" name="username" placeholder="Username">
