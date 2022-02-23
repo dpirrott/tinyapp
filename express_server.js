@@ -44,6 +44,16 @@ const idFromEmailLookup = function(email) {
   return undefined;
 };
 
+const printUsers = function() {
+  console.log("Printing Users Object:")
+  for (const user in users) {
+    const id = users[user].id;
+    const email = users[user].email;
+    const password = users[user].password;
+    console.log(`id: ${id} --- email: ${email} --- password: ${password}`);
+  }
+}
+
 // Considering the home directory incomplete, for now redirect to URL summary page
 app.get("/", (req, res) => {
   res.redirect('/urls');
@@ -80,6 +90,7 @@ app.post("/register", (req,res) => {
     res.cookie("user_id", userId);
     res.redirect("/urls");
   }
+  printUsers();
 });
 
 app.post("/login", (req,res) => {
