@@ -102,9 +102,9 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 });
 
 // Redirects to edit link page
-app.get("/u/:shortURL", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  if (!(shortURL in urlDatabase)) {
+  if (!(urlDatabase[shortURL])) {
     res.redirect('/*');
   } else {
     const longURL = urlDatabase[shortURL];
@@ -115,6 +115,16 @@ app.get("/u/:shortURL", (req, res) => {
     };
     res.render('urls_show', templateVars);
   }
+});
+
+// Redirect to longURL
+app.get("/u/:shortURL", (req,res) => {
+  const shortURL = req.params.shortURL;
+  if (!(shortURL in urlDatabase)) {
+    return res.redirect('/*');
+  }
+  const longURL = urlDatabase[shortURL];
+  return res.redirect(longURL);
 });
 
 // Update longURL corresponding to id => (shortURL)
