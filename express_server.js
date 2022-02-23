@@ -15,13 +15,13 @@ const urlDatabase = {
 
 const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
 };
@@ -50,17 +50,12 @@ app.post("/register", (req,res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  console.log(`req.body.email: ${req.body.email} --- req.body.password: ${req.body.password}`);
-
-  if (req.body.email === "" || req.body.password === "") {
+  if (email === "" || password === "") {
     const msg = "Both form fields must be filled in!";
     const templateVars = { user: users[req.cookies.user_id], msg: msg };
     res.statusCode = 400;
     res.render("register_user", templateVars);
   } else {
-    // Testing results
-    console.log(`Email: ${email} --- password: ${password}`);
-
     const newUser = {
       id: userId,
       email: email,
@@ -68,13 +63,8 @@ app.post("/register", (req,res) => {
     };
     users[userId] = newUser;
     res.cookie("user_id", userId);
-
-    // Testing results so far in global object
-    //console.log(`UserID: ${users[userId].id} --- Email: ${users[userId].email} --- Password: ${users[userId].password}`);
-
     res.redirect("/urls");
   }
-  
 });
 
 app.post("/login", (req,res) => {
