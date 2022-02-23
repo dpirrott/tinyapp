@@ -13,6 +13,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
 const generateRandomString = function() {
   let randomString = "";
   const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -28,19 +41,50 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req,res) => {
-  const username = req.cookies.username
-  const templateVars = { username: username };
+  const templateVars = { user: users[req.cookies.user_id], msg: undefined };
   res.render("register_user", templateVars);
 });
 
+app.post("/register", (req,res) => {
+  const userId = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+
+  console.log(`req.body.email: ${req.body.email} --- req.body.password: ${req.body.password}`);
+
+  if (req.body.email === "" || req.body.password === "") {
+    const msg = "Both form fields must be filled in!";
+    const templateVars = { user: users[req.cookies.user_id], msg: msg };
+    res.statusCode = 400;
+    res.render("register_user", templateVars);
+  } else {
+    // Testing results
+    console.log(`Email: ${email} --- password: ${password}`);
+
+    const newUser = {
+      id: userId,
+      email: email,
+      password: password
+    };
+    users[userId] = newUser;
+    res.cookie("user_id", userId);
+
+    // Testing results so far in global object
+    //console.log(`UserID: ${users[userId].id} --- Email: ${users[userId].email} --- Password: ${users[userId].password}`);
+
+    res.redirect("/urls");
+  }
+  
+});
+
 app.post("/login", (req,res) => {
-  const username = req.body["username"];
+  const username = req.body["email"];
   res.cookie("username", username);
   res.redirect('/urls');
 });
 
 app.post("/logout", (req,res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -48,7 +92,7 @@ app.post("/logout", (req,res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies.username
+    user: users[req.cookies.user_id]
   };
   res.render('urls_index', templateVars);
 });
@@ -64,7 +108,7 @@ app.post("/urls", (req,res) => {
 // Generate form for user to submit new URL
 app.get("/urls/new", (req,res) => {
   const templateVars = {
-    username: req.cookies.username
+    user: users[req.cookies.user_id]
   };
   res.render('urls_new', templateVars);
 });
@@ -85,7 +129,7 @@ app.get("/u/:shortURL", (req, res) => {
     const templateVars = {
       shortURL: shortURL,
       longURL: longURL,
-      username: req.cookies.username
+      user: users[req.cookies.user_id]
     };
     res.render('urls_show', templateVars);
   }

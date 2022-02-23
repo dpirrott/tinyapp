@@ -15,6 +15,9 @@
 
     <main style="margin: 1em;">
       <h3>Register</h3>
+      <% if (msg !== undefined) { %>
+        <p class="text-danger" style="margin:0;"><%= msg %></p>
+      <% } %>
       <form class="form-inline" action="/register" method="POST">
         <div class="form-group mb-2">
           <label for="email">Email: </label>
