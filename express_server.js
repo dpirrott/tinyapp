@@ -92,6 +92,12 @@ app.post("/register", (req,res) => {
   }
 });
 
+app.get("/login", (req,res) => {
+  const msg = undefined;
+  const templateVars = { user: users[req.cookies.user_id], msg: msg }
+  res.render("login", templateVars);
+});
+
 app.post("/login", (req,res) => {
   const username = req.body["email"];
   res.cookie("username", username);
