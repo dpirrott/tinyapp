@@ -3,67 +3,17 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const { 
+  urlDatabase, 
+  users, 
+  userCheck, 
+  printUsers,
+  generateRandomString 
+} = require('./helpers/helperFunctions');
 
 app.use(bodyParser.urlencoded({extended: true}), cookieParser());
 
 app.set("view engine", "ejs");
-
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
-};
-
-const generateRandomString = function() {
-  let randomString = "";
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (let i = 0; i < 6; i++) {
-    randomString += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return randomString;
-};
-
-const userCheck = function(email, password, registered) {
-  if (email === "" || password === "") {
-    return { user: null, msg: "Both fields must be filled in!", error: true };
-  }
-  
-  for (const user in users) {
-    if (users[user].email === email) {
-      if (!registered) {
-        return { user: null, msg: "Account already exists!", error: true };
-      }
-      if (password !== users[user].password && registered) {
-        return { user: null, msg: "Invalid login information", error: true };
-      }
-      return { user: users[user], msg: "Account already exists!", error: false };
-    }
-  }
-
-  return { user: null, msg: "Invalid account information", error: false };
-};
-
-const printUsers = function() {
-  console.log("Printing Users Object:")
-  for (const user in users) {
-    const id = users[user].id;
-    const email = users[user].email;
-    const password = users[user].password;
-    console.log(`id: ${id} --- email: ${email} --- password: ${password}`);
-  }
-}
 
 // Considering the home directory incomplete, for now redirect to URL summary page
 app.get("/", (req, res) => {
