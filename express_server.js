@@ -35,6 +35,15 @@ const generateRandomString = function() {
   return randomString;
 };
 
+const idFromEmailLookup = function(email) {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return users[user].id;
+    }
+  }
+  return undefined;
+};
+
 // Considering the home directory incomplete, for now redirect to URL summary page
 app.get("/", (req, res) => {
   res.redirect('/urls');
@@ -49,9 +58,15 @@ app.post("/register", (req,res) => {
   const userId = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const emailExists = idFromEmailLookup(email);
 
   if (email === "" || password === "") {
     const msg = "Both form fields must be filled in!";
+    const templateVars = { user: users[req.cookies.user_id], msg: msg };
+    res.statusCode = 400;
+    res.render("register_user", templateVars);
+  }else if(emailExists) {
+    const msg = "Email already exists!";
     const templateVars = { user: users[req.cookies.user_id], msg: msg };
     res.statusCode = 400;
     res.render("register_user", templateVars);
