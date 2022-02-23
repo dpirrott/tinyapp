@@ -4,16 +4,17 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-      <div class="navbar-nav">
+      <div class="navbar-nav align-items-center">
         <% if (user) { %>
-          <p>Logged in as: <%= user.email %></p>
-          <form class="form-inline" method="POST" action="/logout">
-            <button class="btn btn-outline-secondary">Logout</button>
+          
+          <form class="row align-items-center" method="POST" action="/logout">
+            <p class="text-dark" style="margin: 0 1em !important; vertical-align: center;"><strong>Logged in as: <%= user.email %></strong></p>
+            <button  class="btn btn-outline-secondary text-dark">Logout</button>
           </form>
         <% } else { %>
           <a class="nav-item nav-link" href="/register">Register</a>

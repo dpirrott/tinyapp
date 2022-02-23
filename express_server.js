@@ -108,12 +108,12 @@ app.post("/login", (req,res) => {
     res.statusCode = 403;
     res.render("login", templateVars);
   } else if (!userId) {
-    const msg = "Email not found, try again or register new account";
+    const msg = "Invalid login information";
     const templateVars = { user: users[req.cookies.user_id], msg: msg };
     res.statusCode = 403;
     res.render("login", templateVars);
   } else if(password !== users[userId].password) {
-    const msg = "Incorrect password, try again";
+    const msg = "Invalid login information";
     const templateVars = { user: users[req.cookies.user_id], msg: msg };
     res.statusCode = 403;
     res.render("login", templateVars);
