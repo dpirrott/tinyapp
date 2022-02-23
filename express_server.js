@@ -99,9 +99,25 @@ app.get("/login", (req,res) => {
 });
 
 app.post("/login", (req,res) => {
-  const username = req.body["email"];
-  res.cookie("username", username);
-  res.redirect('/urls');
+  const email = req.body.email;
+  const password = req.body.password;
+  const userId = idFromEmailLookup(email);
+  if (email === "" || password === "") {
+    const msg = "Please fill in both fields!";
+    const templateVars = { user: users[req.cookies.user_id], msg: msg };
+    res.render("login", templateVars);
+  } else if (!userId) {
+    const msg = "Email not found, try again or register new account";
+    const templateVars = { user: users[req.cookies.user_id], msg: msg };
+    res.render("login", templateVars);
+  } else if(password !== users[userId].password) {
+    const msg = "Incorrect password, try again";
+    const templateVars = { user: users[req.cookies.user_id], msg: msg };
+    res.render("login", templateVars);
+  } else {
+    res.cookie("user_id", userId);
+    res.redirect('/urls');
+  }
 });
 
 app.post("/logout", (req,res) => {
