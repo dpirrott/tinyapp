@@ -46,8 +46,7 @@ app.post("/register", (req,res) => {
 });
 
 app.get("/login", (req,res) => {
-  const msg = undefined;
-  const templateVars = { user: users[req.cookies.user_id], msg: msg }
+  const templateVars = { user: null, msg: null };
   res.render("login", templateVars);
 });
 
@@ -81,14 +80,24 @@ app.get("/urls", (req, res) => {
 
 // New URL submitted via form
 app.post("/urls", (req,res) => {
+  const userID = req.cookies.user_id;
+  if (!userID) {
+    res.statusCode = 403;
+    const templateVars = { user: null, msg: "You must be logged in to create tinyURL's" };
+    return res.render("login", templateVars)
+  }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   res.redirect(`/u/${shortURL}`);
 });
 
-// Generate form for user to submit new URL
+// Generate form for user to submit new URL, user muste be logged in!
 app.get("/urls/new", (req,res) => {
+  const userID = req.cookies.user_id;
+  if (!userID) {
+    return res.redirect("/login");
+  }
   const templateVars = {
     user: users[req.cookies.user_id]
   };
