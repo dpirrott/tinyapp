@@ -35,13 +35,24 @@ const generateRandomString = function() {
   return randomString;
 };
 
-const idFromEmailLookup = function(email) {
+const userCheck = function(email, password, registered) {
+  if (email === "" || password === "") {
+    return { user: null, msg: "Both fields must be filled in!", error: true };
+  }
+  
   for (const user in users) {
     if (users[user].email === email) {
-      return users[user].id;
+      if (!registered) {
+        return { user: null, msg: "Account already exists!", error: true };
+      }
+      if (password !== users[user].password && registered) {
+        return { user: null, msg: "Invalid login information", error: true };
+      }
+      return { user: users[user], msg: "Account already exists!", error: false };
     }
   }
-  return undefined;
+
+  return { user: null, msg: "Invalid account information", error: false };
 };
 
 const printUsers = function() {
@@ -66,19 +77,11 @@ app.get("/register", (req,res) => {
 
 app.post("/register", (req,res) => {
   const userId = generateRandomString();
-  const email = req.body.email;
-  const password = req.body.password;
-  const emailExists = idFromEmailLookup(email);
+  const { email, password } = req.body;
+  const { user, msg, error } = userCheck(email, password, false);
 
-  if (email === "" || password === "") {
-    const msg = "Both form fields must be filled in!";
-    const templateVars = { user: users[req.cookies.user_id], msg: msg };
-    res.statusCode = 400;
-    res.render("register_user", templateVars);
-  }else if(emailExists) {
-    const msg = "Email already exists!";
-    const templateVars = { user: users[req.cookies.user_id], msg: msg };
-    res.statusCode = 400;
+  if (error || user) {
+    const templateVars = { user, msg };
     res.render("register_user", templateVars);
   } else {
     const newUser = {
@@ -99,26 +102,15 @@ app.get("/login", (req,res) => {
 });
 
 app.post("/login", (req,res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const userId = idFromEmailLookup(email);
-  if (email === "" || password === "") {
-    const msg = "Please fill in both fields!";
-    const templateVars = { user: users[req.cookies.user_id], msg: msg };
-    res.statusCode = 403;
-    res.render("login", templateVars);
-  } else if (!userId) {
-    const msg = "Invalid login information";
-    const templateVars = { user: users[req.cookies.user_id], msg: msg };
-    res.statusCode = 403;
-    res.render("login", templateVars);
-  } else if(password !== users[userId].password) {
-    const msg = "Invalid login information";
-    const templateVars = { user: users[req.cookies.user_id], msg: msg };
+  const { email, password} = req.body;
+  const { user, msg, error } = userCheck(email, password, true);
+
+  if (error || !user) {
+    const templateVars = { user: user, msg: msg };
     res.statusCode = 403;
     res.render("login", templateVars);
   } else {
-    res.cookie("user_id", userId);
+    res.cookie("user_id", user.id);
     res.redirect('/urls');
   }
 });
