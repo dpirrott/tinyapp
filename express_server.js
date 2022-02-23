@@ -90,7 +90,6 @@ app.post("/register", (req,res) => {
     res.cookie("user_id", userId);
     res.redirect("/urls");
   }
-  printUsers();
 });
 
 app.post("/login", (req,res) => {
