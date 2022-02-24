@@ -13,6 +13,7 @@ const urlDatabase = {
 
 const users = {};
 
+// Gather only URLs that are unique to the user, return customized user database
 const getUserUrls = function(userID) {
   const userURLs = {};
   for (const urlObj in urlDatabase) {
@@ -23,23 +24,34 @@ const getUserUrls = function(userID) {
   return userURLs;
 };
 
+const getUserByEmail = function(email, database) {
+  for (const userID in database) {
+    if (database[userID].email === email) {
+      return database[userID];
+    }
+  }
+  return null;
+}
+
 const userCheck = function(email, password, registered) {
   if (email === "" || password === "") {
     return { user: null, msg: "Both fields must be filled in!", error: true };
   }
-  
-  for (const user in users) {
-    if (users[user].email === email) {
-      if (!registered) {
-        return { user: null, msg: "Account already exists!", error: true };
-      }
-      if (registered && !bcrypt.compareSync(password, users[user].password)) {
-        return { user: null, msg: "Invalid login information", error: true };
-      }
-      return { user: users[user], msg: null, error: false };
+  // Return users database profile if exists, otherwise null
+  const userExists = getUserByEmail(email, users);
+  // Go through verification process
+  if (userExists && registered) {
+    // Account found, check password
+    if (!bcrypt.compareSync(password, userExists.password)) {
+      return { user: null, msg: "Invalid login information", error: true };
     }
+    // Correct password, return user with no error
+    return { user: userExists, msg: null, error: false };
+  } else if (userExists && !registered) {
+    // Account found while looking to register, return error and msg
+    return { user: null, msg: "Account already exists!", error: true };
   }
-
+  // No account found, success for registration (error msg ignored), failure for login
   return { user: null, msg: "Invalid account information", error: false };
 };
 
@@ -65,6 +77,7 @@ const printUsers = function() {
 module.exports = {
   generateRandomString,
   getUserUrls,
+  getUserByEmail,
   printUsers,
   urlDatabase,
   users,
