@@ -18,8 +18,8 @@
       <div class="card-header">
         <h1>Edit</h1>
         <form method="POST" class="form-inline justify-content-center" action="/urls/<%= shortURL %>" >
-          <label for="newLongURL">New URL: </label>
-          <input class="form-control" name="newLongURL" type="text">
+          <label for="newLongURL">New Long URL: </label>
+          <input class="form-control" name="newLongURL" placeholder="<%= longURL %>" type="text">
           <button class="btn btn-primary">Submit</button>
         </form>
       </div>

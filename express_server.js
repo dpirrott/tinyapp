@@ -100,7 +100,11 @@ app.post("/urls", (req,res) => {
   if (!userID) {
     return res.status(403).send('You must be logged in to create tinyURLs\n')
   }
-  const longURL = req.body.longURL;
+  let longURL = req.body.longURL;
+  // Add https, unless http is already specified
+  if (longURL.slice(0, 4) !== "http") {
+    longURL = "https://" + longURL;
+  }
   if (longURL === "") {
     const templateVars = {
       user: userID,
@@ -110,8 +114,8 @@ app.post("/urls", (req,res) => {
   }
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {
-    longURL: longURL,
-    userID: userID
+    longURL,
+    userID
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -133,10 +137,10 @@ app.get("/urls/new", (req,res) => {
   res.render('urls_new', templateVars);
 });
 
-app.post("/urls/:shortURL/delete", (req,res) => {
+app.post("/urls/:id/delete", (req,res) => {
   const userID = req.session.user_id;
-  const userURLs = getUserUrls(userID);
-  const shortURL = req.params.shortURL;
+  const userURLs = getUserUrls(userID, urlDatabase);
+  const shortURL = req.params.id;
   if (!userID) {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
   }
@@ -150,7 +154,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 // Redirects to edit link page
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
-  const userURLs = getUserUrls(userID);
+  const userURLs = getUserUrls(userID, urlDatabase);
   const shortURL = req.params.shortURL;
   if (!userID) {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
@@ -184,12 +188,17 @@ app.post("/urls/:id", (req,res) => {
   if (!userID) {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
   }
-  const userURLs = getUserUrls(userID);
+  const userURLs = getUserUrls(userID, urlDatabase);
   const shortURL = req.params.id;
   if (!userURLs[shortURL]) {
     return res.status(403).send("Action prohibited: You can't delete someone elses url.")
   }
-  urlDatabase[shortURL].longURL = req.body.newLongURL;
+  const longURL = req.body.newLongURL
+  // Add https, unless http is already specified
+  if (longURL.slice(0, 4) !== "http") {
+    longURL = "https://" + longURL;
+  }
+  urlDatabase[shortURL].longURL = longURL;
   res.redirect('/urls');
 });
 
