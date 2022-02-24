@@ -82,14 +82,15 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req,res) => {
   const userID = req.cookies.user_id;
   if (!userID) {
-    res.statusCode = 403;
-    const templateVars = { user: null, msg: "You must be logged in to create tinyURL's" };
-    return res.render("login", templateVars)
+    // res.statusCode = 403;
+    // res.write("You must be logged in to create tinyURL's");
+    // res.msg("You must be logged in to create tinyURL's");
+    return res.status(403).send('You must be logged in to create tinyURLs\n')
   }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
-  res.redirect(`/u/${shortURL}`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 // Generate form for user to submit new URL, user muste be logged in!
