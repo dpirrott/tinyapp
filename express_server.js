@@ -43,6 +43,7 @@ app.post("/register", (req,res) => {
   if (error) {
     const templateVars = { user, msg };
     res.statusCode = 400;
+    res.statusMessage = msg;
     return res.render("register_user", templateVars);
   } else {
     const newUser = {
@@ -68,6 +69,7 @@ app.post("/login", (req,res) => {
   if (error || !user) {
     const templateVars = { user: user, msg: msg };
     res.statusCode = 403;
+    res.statusMessage = msg;
     res.render("login", templateVars);
   } else {
     req.session.user_id = user.id;
