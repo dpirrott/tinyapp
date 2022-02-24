@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
 const bcrypt = require('bcryptjs');
 const { 
   urlDatabase, 
@@ -13,13 +13,16 @@ const {
   getUserUrls
 } = require('./helpers/helperFunctions');
 
-app.use(bodyParser.urlencoded({extended: true}), cookieParser());
+app.use(bodyParser.urlencoded({extended: true}), cookieSession({
+  name: 'session',
+  keys: ['user_id']
+}));
 
 app.set("view engine", "ejs");
 
 // Considering the home directory incomplete, for now redirect to URL summary page
 app.get("/", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   if (!userID) {
     return res.redirect("/login");
   }
@@ -27,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req,res) => {
-  const templateVars = { user: users[req.cookies.user_id], msg: undefined };
+  const templateVars = { user: users[req.session.user_id], msg: undefined };
   res.render("register_user", templateVars);
 });
 
@@ -48,7 +51,7 @@ app.post("/register", (req,res) => {
       password: hashedPassword
     };
     users[userId] = newUser;
-    res.cookie("user_id", userId);
+    req.session.user_id = userId;
     return res.redirect("/urls");
   }
 });
@@ -67,19 +70,19 @@ app.post("/login", (req,res) => {
     res.statusCode = 403;
     res.render("login", templateVars);
   } else {
-    res.cookie("user_id", user.id);
+    req.session.user_id = user.id;
     res.redirect('/urls');
   }
 });
 
 app.post("/logout", (req,res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/login");
 });
 
 // Display users URL's summary
 app.get("/urls", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   if (!userID) {
     res.statusCode = 403;
     return res.render("login", { user: null, msg: "You need to login to view your URL's" });
@@ -93,7 +96,7 @@ app.get("/urls", (req, res) => {
 
 // New URL submitted via form
 app.post("/urls", (req,res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   if (!userID) {
     return res.status(403).send('You must be logged in to create tinyURLs\n')
   }
@@ -115,7 +118,7 @@ app.post("/urls", (req,res) => {
 
 // Generate form for user to submit new URL, user must be logged in!
 app.get("/urls/new", (req,res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   if (!userID) {
     const templateVars = {
       user: null,
@@ -131,13 +134,13 @@ app.get("/urls/new", (req,res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req,res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const userURLs = getUserUrls(userID);
   const shortURL = req.params.shortURL;
   if (!userID) {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
   }
-  if (!userURLs[id]) {
+  if (!userURLs[shortURL]) {
     return res.status(403).send("Action prohibited: You can't delete someone elses url.")
   }
   delete urlDatabase[shortURL];
@@ -146,20 +149,20 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 // Redirects to edit link page
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const userURLs = getUserUrls(userID);
   const shortURL = req.params.shortURL;
   if (!userID) {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
   }
-  if (!userURLs[id]) {
+  if (!userURLs[shortURL]) {
     return res.status(403).send("Action prohibited: If this url exists, you don't have access to it")
   } else {
     const longURL = urlDatabase[shortURL].longURL;
     const templateVars = {
       shortURL: shortURL,
       longURL: longURL,
-      user: users[req.cookies.user_id]
+      user: users[req.session.user_id]
     };
     return res.render('urls_show', templateVars);
   }
@@ -177,7 +180,7 @@ app.get("/u/:shortURL", (req,res) => {
 
 // Update longURL corresponding to id => (shortURL)
 app.post("/urls/:id", (req,res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   if (!userID) {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
   }
