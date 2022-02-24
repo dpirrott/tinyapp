@@ -1,4 +1,5 @@
 const { assert } = require('chai');
+const bcrypt = require("bcryptjs/dist/bcrypt");
 
 const { getUserByEmail, userCheck } = require('../helpers/helperFunctions');
 
@@ -11,7 +12,7 @@ const testUsers = {
   "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 };
 
@@ -31,10 +32,37 @@ describe('getUserByEmail', () => {
 });
 
 describe('userCheck', () => {
-    it("should return user as null, a populated msg, and error flag true when either input field is blank and registered flag true", () => {
-      const check = userCheck("", "", true);
+    it("should return { user: null, msg: expectedMsg, error: true } when either input field is blank and registered flag true", () => {
+      const check = userCheck("", "", true, testUsers);
       const expectedMsg = "Both fields must be filled in!";
       const expected = { user: null, msg: expectedMsg, error: true };
       assert.deepEqual(check, expected);
     });
+    it("should return { user: null, msg: expectedMsg, error: true } when either input field is blank and registered flag false", () => {
+      const check = userCheck("", "", false, testUsers);
+      const expectedMsg = "Both fields must be filled in!";
+      const expected = { user: null, msg: expectedMsg, error: true };
+      assert.deepEqual(check, expected);
+    });
+    it("should return { user: null, msg: 'Invalid login information', error: true } when account exists and logging in with password incorrect", () => {
+      const check = userCheck("user2@example.com", "dishwasher", true, testUsers);
+      const expectedMsg = "Invalid login information";
+      const expected = { user: null, msg: expectedMsg, error: true };
+      assert.deepEqual(check, expected);
+    });
+    it("should return { user: userExists, msg: null, error: false } when account exists and logging in with correct password", () => {
+      const check = userCheck("user2@example.com", "dishwasher-funk", true, testUsers);
+      const userExists = testUsers["user2RandomID"];
+      //const expectedMsg = null;
+      const expected = { user: userExists, msg: null, error: false };
+      assert.deepEqual(check, expected);
+    });
+    it("should return { user: null, msg: 'Account already exists!', error: true } when account exists and logging in with correct password", () => {
+      const check = userCheck("user2@example.com", "dishwasher-funk", true, testUsers);
+      const userExists = testUsers["user2RandomID"];
+      //const expectedMsg = null;
+      const expected = {  };
+      assert.deepEqual(check, expected);
+    });
+
   })

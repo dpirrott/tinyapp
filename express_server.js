@@ -38,9 +38,9 @@ app.post("/register", (req,res) => {
   const userId = generateRandomString();
   const { email, password } = req.body;
   const hashedPassword = password === "" ? "" : bcrypt.hashSync(password, 10);
-  const { user, msg, error } = userCheck(email, hashedPassword, false);
+  const { user, msg, error } = userCheck(email, hashedPassword, false, users);
 
-  if (error || user) {
+  if (error) {
     const templateVars = { user, msg };
     res.statusCode = 400;
     return res.render("register_user", templateVars);
@@ -63,7 +63,7 @@ app.get("/login", (req,res) => {
 
 app.post("/login", (req,res) => {
   const { email, password} = req.body;
-  const { user, msg, error } = userCheck(email, password, true);
+  const { user, msg, error } = userCheck(email, password, true, users);
 
   if (error || !user) {
     const templateVars = { user: user, msg: msg };

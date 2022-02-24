@@ -33,12 +33,13 @@ const getUserByEmail = function(email, database) {
   return null;
 }
 
-const userCheck = function(email, password, registered) {
+const userCheck = function(email, password, registered, database) {
   if (email === "" || password === "") {
     return { user: null, msg: "Both fields must be filled in!", error: true };
   }
   // Return users database profile if exists, otherwise null
-  const userExists = getUserByEmail(email, users);
+  const userExists = getUserByEmail(email, database);
+  console.log(`User exists: ${userExists.email}`);
   // Go through verification process
   if (userExists && registered) {
     // Account found, check password
