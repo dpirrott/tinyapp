@@ -39,7 +39,6 @@ const userCheck = function(email, password, registered, database) {
   }
   // Return users database profile if exists, otherwise null
   const userExists = getUserByEmail(email, database);
-  console.log(`User exists: ${userExists.email}`);
   // Go through verification process
   if (userExists && registered) {
     // Account found, check password

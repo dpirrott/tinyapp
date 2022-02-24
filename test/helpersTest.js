@@ -52,17 +52,31 @@ describe('userCheck', () => {
     });
     it("should return { user: userExists, msg: null, error: false } when account exists and logging in with correct password", () => {
       const check = userCheck("user2@example.com", "dishwasher-funk", true, testUsers);
-      const userExists = testUsers["user2RandomID"];
-      //const expectedMsg = null;
+      const userExists = getUserByEmail("user2@example.com", testUsers);
       const expected = { user: userExists, msg: null, error: false };
       assert.deepEqual(check, expected);
     });
-    it("should return { user: null, msg: 'Account already exists!', error: true } when account exists and logging in with correct password", () => {
-      const check = userCheck("user2@example.com", "dishwasher-funk", true, testUsers);
-      const userExists = testUsers["user2RandomID"];
-      //const expectedMsg = null;
-      const expected = {  };
+    it("should return { user: null, msg: 'Account already exists!', error: true } when account exists while trying to register", () => {
+      const check = userCheck("user2@example.com", "dishwasher-funk", false, testUsers);
+      const user = null;
+      const expectedMsg = "Account already exists!";
+      const expected = { user: user, msg: expectedMsg, error: true };
       assert.deepEqual(check, expected);
     });
+    it("should return { user: null, msg: 'Invalid account information', error: false } when no user is found while logging in", () => {
+      const check = userCheck("user1@example.com", "dishwasher-funk", true, testUsers);
+      const user = null;
+      const expectedMsg = "Invalid account information";
+      const expected = { user: user, msg: expectedMsg, error: false };
+      assert.deepEqual(check, expected);
+    });
+    it("should return { user: null, msg: 'Invalid account information', error: false } when no user is found while registering", () => {
+      const check = userCheck("user1@example.com", "dishwasher-funk", false, testUsers);
+      const user = null;
+      const expectedMsg = "Invalid account information";
+      const expected = { user: user, msg: expectedMsg, error: false };
+      assert.deepEqual(check, expected);
+    });
+
 
   })
