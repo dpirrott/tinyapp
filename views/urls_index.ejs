@@ -21,10 +21,10 @@
         </tr>
       </thead>
       <tbody>
-        <% for(const url in urls) { %>
+        <% for (const url in urls) { %>
           <tr>
             <td><a href="http://localhost:8080/u/<%= url %>"><%= url %></a></td>
-            <td><%= urls[url] %></td>
+            <td><%= urls[url].longURL %></td>
             <td>
               <a href="/urls/<%= url %>"><button class="btn btn-outline-primary">Edit</button></a>
             </td>

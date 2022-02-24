@@ -22,6 +22,16 @@ const users = {
   }
 };
 
+const getUserUrls = function(userID) {
+  const userURLs = {};
+  for (const urlObj in urlDatabase) {
+    if (urlDatabase[urlObj].userID === userID) {
+      userURLs[urlObj] = urlDatabase[urlObj];
+    }
+  }
+  return userURLs;
+};
+
 const userCheck = function(email, password, registered) {
   if (email === "" || password === "") {
     return { user: null, msg: "Both fields must be filled in!", error: true };
@@ -62,9 +72,10 @@ const printUsers = function() {
 }
 
 module.exports = {
+  generateRandomString,
+  getUserUrls,
+  printUsers,
   urlDatabase,
   users,
-  userCheck,
-  generateRandomString,
-  printUsers
+  userCheck
 };

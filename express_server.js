@@ -8,7 +8,8 @@ const {
   users, 
   userCheck, 
   printUsers,
-  generateRandomString 
+  generateRandomString,
+  getUserUrls
 } = require('./helpers/helperFunctions');
 
 app.use(bodyParser.urlencoded({extended: true}), cookieParser());
@@ -75,9 +76,10 @@ app.post("/logout", (req,res) => {
 
 // Display users URL's summary
 app.get("/urls", (req, res) => {
+  const userID = req.cookies.user_id;
   const templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies.user_id]
+    urls: getUserUrls(userID),
+    user: users[userID]
   };
   res.render('urls_index', templateVars);
 });
@@ -86,14 +88,14 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req,res) => {
   const userID = req.cookies.user_id;
   if (!userID) {
-    // res.statusCode = 403;
-    // res.write("You must be logged in to create tinyURL's");
-    // res.msg("You must be logged in to create tinyURL's");
     return res.status(403).send('You must be logged in to create tinyURLs\n')
   }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userID
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -121,7 +123,7 @@ app.get("/urls/:shortURL", (req, res) => {
   if (!(urlDatabase[shortURL])) {
     res.redirect('/*');
   } else {
-    const longURL = urlDatabase[shortURL];
+    const longURL = urlDatabase[shortURL].longURL;
     const templateVars = {
       shortURL: shortURL,
       longURL: longURL,
@@ -134,17 +136,17 @@ app.get("/urls/:shortURL", (req, res) => {
 // Redirect to longURL
 app.get("/u/:shortURL", (req,res) => {
   const shortURL = req.params.shortURL;
-  if (!(shortURL in urlDatabase)) {
+  if (!(urlDatabase[shortURL])) {
     return res.redirect('/*');
   }
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   return res.redirect(longURL);
 });
 
 // Update longURL corresponding to id => (shortURL)
 app.post("/urls/:id", (req,res) => {
   const id = req.params.id;
-  urlDatabase[id] = req.body.newLongURL;
+  urlDatabase[id].longURL = req.body.newLongURL;
   res.redirect('/urls');
 });
 
