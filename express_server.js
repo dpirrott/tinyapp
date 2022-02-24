@@ -185,11 +185,11 @@ app.post("/urls/:id", (req,res) => {
     return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
   }
   const userURLs = getUserUrls(userID);
-  const id = req.params.id;
-  if (!userURLs[id]) {
+  const shortURL = req.params.id;
+  if (!userURLs[shortURL]) {
     return res.status(403).send("Action prohibited: You can't delete someone elses url.")
   }
-  urlDatabase[id].longURL = req.body.newLongURL;
+  urlDatabase[shortURL].longURL = req.body.newLongURL;
   res.redirect('/urls');
 });
 
