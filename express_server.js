@@ -71,12 +71,16 @@ app.post("/login", (req,res) => {
 
 app.post("/logout", (req,res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Display users URL's summary
 app.get("/urls", (req, res) => {
   const userID = req.cookies.user_id;
+  if (!userID) {
+    res.statusCode = 403;
+    return res.render("login", { user: null, msg: "You need to login to view your URL's" });
+  }
   const templateVars = {
     urls: getUserUrls(userID),
     user: users[userID]
@@ -91,6 +95,13 @@ app.post("/urls", (req,res) => {
     return res.status(403).send('You must be logged in to create tinyURLs\n')
   }
   const longURL = req.body.longURL;
+  if (longURL === "") {
+    const templateVars = {
+      user: userID,
+      msg: "URL field cannot be blank"
+    }
+    return res.render('urls_new', templateVars);
+  }
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {
     longURL: longURL,
@@ -99,29 +110,47 @@ app.post("/urls", (req,res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-// Generate form for user to submit new URL, user muste be logged in!
+// Generate form for user to submit new URL, user must be logged in!
 app.get("/urls/new", (req,res) => {
   const userID = req.cookies.user_id;
   if (!userID) {
-    return res.redirect("/login");
+    const templateVars = {
+      user: null,
+      msg: "You need to sign-in to be able to create a new URL"
+    };
+    return res.render("login", templateVars);
   }
   const templateVars = {
-    user: users[req.cookies.user_id]
+    user: users[userID],
+    msg: null
   };
   res.render('urls_new', templateVars);
 });
 
 app.post("/urls/:shortURL/delete", (req,res) => {
+  const userID = req.cookies.user_id;
+  const userURLs = getUserUrls(userID);
   const shortURL = req.params.shortURL;
+  if (!userID) {
+    return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
+  }
+  if (!userURLs[id]) {
+    return res.status(403).send("Action prohibited: You can't delete someone elses url.")
+  }
   delete urlDatabase[shortURL];
   res.redirect('/urls');
 });
 
 // Redirects to edit link page
 app.get("/urls/:shortURL", (req, res) => {
+  const userID = req.cookies.user_id;
+  const userURLs = getUserUrls(userID);
   const shortURL = req.params.shortURL;
-  if (!(urlDatabase[shortURL])) {
-    res.redirect('/*');
+  if (!userID) {
+    return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
+  }
+  if (!userURLs[id]) {
+    return res.status(403).send("Action prohibited: If this url exists, you don't have access to it")
   } else {
     const longURL = urlDatabase[shortURL].longURL;
     const templateVars = {
@@ -129,7 +158,7 @@ app.get("/urls/:shortURL", (req, res) => {
       longURL: longURL,
       user: users[req.cookies.user_id]
     };
-    res.render('urls_show', templateVars);
+    return res.render('urls_show', templateVars);
   }
 });
 
@@ -145,7 +174,15 @@ app.get("/u/:shortURL", (req,res) => {
 
 // Update longURL corresponding to id => (shortURL)
 app.post("/urls/:id", (req,res) => {
+  const userID = req.cookies.user_id;
+  if (!userID) {
+    return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
+  }
+  const userURLs = getUserUrls(userID);
   const id = req.params.id;
+  if (!userURLs[id]) {
+    return res.status(403).send("Action prohibited: You can't delete someone elses url.")
+  }
   urlDatabase[id].longURL = req.body.newLongURL;
   res.redirect('/urls');
 });

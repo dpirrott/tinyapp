@@ -16,6 +16,9 @@
 
     <main style="margin: 1em;">
       <h3>Create TinyURL</h3>
+      <% if (msg !== undefined) { %>
+        <p class="text-danger" style="margin:0;"><%= msg %></p>
+      <% } %>
       <form class="form-inline" action="/urls" method="POST">
         <div class="form-group mb-2">
           <label for="longURL">Enter a URL:</label>
