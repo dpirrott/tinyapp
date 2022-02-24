@@ -17,7 +17,11 @@ app.set("view engine", "ejs");
 
 // Considering the home directory incomplete, for now redirect to URL summary page
 app.get("/", (req, res) => {
-  res.redirect('/urls');
+  const userID = req.cookies.user_id;
+  if (!userID) {
+    return res.redirect("/login");
+  }
+  return res.redirect('/urls');
 });
 
 app.get("/register", (req,res) => {
