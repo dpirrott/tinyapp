@@ -14,11 +14,11 @@ const urlDatabase = {
 const users = {};
 
 // Gather only URLs that are unique to the user, return customized user database
-const getUserUrls = function(userID) {
+const getUserUrls = function(userID, database) {
   const userURLs = {};
-  for (const urlObj in urlDatabase) {
-    if (urlDatabase[urlObj].userID === userID) {
-      userURLs[urlObj] = urlDatabase[urlObj];
+  for (const urlObj in database) {
+    if (database[urlObj].userID === userID) {
+      userURLs[urlObj] = database[urlObj];
     }
   }
   return userURLs;

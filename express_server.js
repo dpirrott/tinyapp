@@ -88,7 +88,7 @@ app.get("/urls", (req, res) => {
     return res.render("login", { user: null, msg: "You need to login to view your URL's" });
   }
   const templateVars = {
-    urls: getUserUrls(userID),
+    urls: getUserUrls(userID, urlDatabase),
     user: users[userID]
   };
   res.render('urls_index', templateVars);
