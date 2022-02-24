@@ -11,7 +11,6 @@
       </div>
       <div class="navbar-nav align-items-center">
         <% if (user) { %>
-          
           <form class="row align-items-center" method="POST" action="/logout">
             <p class="text-dark" style="margin: 0 1em !important; vertical-align: center;"><strong>Logged in as: <%= user.email %></strong></p>
             <button  class="btn btn-outline-secondary text-dark">Logout</button>

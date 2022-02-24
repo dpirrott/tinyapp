@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const { 
   urlDatabase, 
   users, 
@@ -33,20 +34,22 @@ app.get("/register", (req,res) => {
 app.post("/register", (req,res) => {
   const userId = generateRandomString();
   const { email, password } = req.body;
-  const { user, msg, error } = userCheck(email, password, false);
+  const hashedPassword = password === "" ? "" : bcrypt.hashSync(password, 10);
+  const { user, msg, error } = userCheck(email, hashedPassword, false);
 
   if (error || user) {
     const templateVars = { user, msg };
-    res.render("register_user", templateVars);
+    res.statusCode = 400;
+    return res.render("register_user", templateVars);
   } else {
     const newUser = {
       id: userId,
       email: email,
-      password: password
+      password: hashedPassword
     };
     users[userId] = newUser;
     res.cookie("user_id", userId);
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
 });
 

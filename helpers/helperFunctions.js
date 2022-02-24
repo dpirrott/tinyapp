@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs/dist/bcrypt");
+
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -9,18 +11,7 @@ const urlDatabase = {
   }
 };
 
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
-};
+const users = {};
 
 const getUserUrls = function(userID) {
   const userURLs = {};
@@ -42,10 +33,10 @@ const userCheck = function(email, password, registered) {
       if (!registered) {
         return { user: null, msg: "Account already exists!", error: true };
       }
-      if (password !== users[user].password && registered) {
+      if (registered && !bcrypt.compareSync(password, users[user].password)) {
         return { user: null, msg: "Invalid login information", error: true };
       }
-      return { user: users[user], msg: "Account already exists!", error: false };
+      return { user: users[user], msg: null, error: false };
     }
   }
 
