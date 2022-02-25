@@ -87,6 +87,7 @@ app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
   if (!userID) {
     res.statusCode = 403;
+    res.statusMessage = "Need to login to view your URL's";
     return res.render("login", { user: null, msg: "You need to login to view your URL's" });
   }
   const templateVars = {
@@ -100,7 +101,7 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req,res) => {
   const userID = req.session.user_id;
   if (!userID) {
-    return res.status(403).send('You must be logged in to create tinyURLs\n')
+    return res.status(403).send("You must be logged in to create tinyURLs. <a href='/login'>Login Page</a>\n");
   }
   let longURL = req.body.longURL;
   // Add https, unless http is already specified
@@ -130,6 +131,8 @@ app.get("/urls/new", (req,res) => {
       user: null,
       msg: "You need to sign-in to be able to create a new URL"
     };
+    res.statusCode = 403;
+    res.statusMessage = templateVars.msg;
     return res.render("login", templateVars);
   }
   const templateVars = {
@@ -144,10 +147,10 @@ app.post("/urls/:id/delete", (req,res) => {
   const userURLs = getUserUrls(userID, urlDatabase);
   const shortURL = req.params.id;
   if (!userID) {
-    return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
+    return res.status(403).send("Action prohibited: Please sign-in to reach this url. <a href='/login'>Login Page</a>")
   }
   if (!userURLs[shortURL]) {
-    return res.status(403).send("Action prohibited: You can't delete someone elses url.")
+    return res.status(403).send("Action prohibited: You can't delete someone elses url.");
   }
   delete urlDatabase[shortURL];
   res.redirect('/urls');
@@ -159,7 +162,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const userURLs = getUserUrls(userID, urlDatabase);
   const shortURL = req.params.shortURL;
   if (!userID) {
-    return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
+    return res.status(403).send("Action prohibited: Please sign-in to reach this url. <a href='/login'>Login Page</a>")
   }
   if (!userURLs[shortURL]) {
     return res.status(403).send("Action prohibited: If this url exists, you don't have access to it")
@@ -188,14 +191,14 @@ app.get("/u/:shortURL", (req,res) => {
 app.post("/urls/:id", (req,res) => {
   const userID = req.session.user_id;
   if (!userID) {
-    return res.status(403).send("Action prohibited: Please sign-in to reach this url.")
+    return res.status(403).send("Action prohibited: Please sign-in to reach this url. <a href='/login'>Login Page</a>");
   }
   const userURLs = getUserUrls(userID, urlDatabase);
   const shortURL = req.params.id;
   if (!userURLs[shortURL]) {
-    return res.status(403).send("Action prohibited: You can't delete someone elses url.")
+    return res.status(403).send("Action prohibited: You can't delete someone elses url. <a href='/urls'>Return</a>")
   }
-  const longURL = req.body.newLongURL
+  let longURL = req.body.newLongURL
   // Add https, unless http is already specified
   if (longURL.slice(0, 4) !== "http") {
     longURL = "https://" + longURL;
@@ -207,6 +210,7 @@ app.post("/urls/:id", (req,res) => {
 // Handle all invalid path requests
 app.get("/*", (req,res) => {
   res.statusCode = 404;
+  res.statusMessage = "Page Not Found";
   res.write("<h1>404 Page Not Found</h1>");
   res.end();
 });
