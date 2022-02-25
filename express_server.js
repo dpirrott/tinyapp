@@ -38,7 +38,7 @@ app.get("/register", (req,res) => {
 });
 
 app.post("/register", (req,res) => {
-  const userId = generateRandomString();
+  const userId = generateRandomString(6);
   const { email, password } = req.body;
   const hashedPassword = password === "" ? "" : bcrypt.hashSync(password, 10);
   const { user, msg, error } = userCheck(email, hashedPassword, false, users);
@@ -140,7 +140,7 @@ app.get("/urls/new", (req,res) => {
   if (!userID || !users[userID]) {
     const templateVars = {
       user: null,
-      msg: "You need to sign-in to be able to create a new URL"
+      msg: "You need to login to create a new URL"
     };
     res.statusCode = 403;
     res.statusMessage = templateVars.msg;
