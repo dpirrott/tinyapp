@@ -35,13 +35,11 @@ describe('getUserByEmail', () => {
   it('should return a user with valid email', () => {
       const user = getUserByEmail("user@example.com", testUsers);
       const expectedUserID = "userRandomID";
-      // Write your assert statement here
       assert.strictEqual(user.id, expectedUserID);
     });
   it('should return null if email doesn\'t exist', () => {
       const user = getUserByEmail("user1@example.com", testUsers);
       const expectedUserID = null;
-      // Write your assert statement here
       assert.strictEqual(user, expectedUserID);
     });
 });

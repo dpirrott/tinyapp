@@ -1,19 +1,10 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW"
-  }
-};
+const urlDatabase = {};
 
 const users = {};
 
-// Gather only URLs that are unique to the user, return customized user database
+// Gather only URLs that are unique to the user, return customized user url database
 const getUserUrls = function(userID, database) {
   const userURLs = {};
   for (const urlObj in database) {
@@ -31,8 +22,11 @@ const getUserByEmail = function(email, database) {
     }
   }
   return null;
-}
+};
 
+// userCheck handles error checking for both POST /login and /register.
+// The 'registered' parameter is a boolean refering to whether someone
+// is signing in (true), or registering as a new user (false).
 const userCheck = function(email, password, registered, database) {
   if (email === "" || password === "") {
     return { user: null, msg: "Both fields must be filled in!", error: true };
@@ -55,30 +49,20 @@ const userCheck = function(email, password, registered, database) {
   return { user: null, msg: "Invalid account information", error: false };
 };
 
-const generateRandomString = function() {
+// Generates random string of specified length (for modularity)
+const generateRandomString = function(length) {
   let randomString = "";
   const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < length; i++) {
     randomString += chars[Math.floor(Math.random() * chars.length)];
   }
   return randomString;
 };
 
-const printUsers = function() {
-  console.log("Printing Users Object:")
-  for (const user in users) {
-    const id = users[user].id;
-    const email = users[user].email;
-    const password = users[user].password;
-    console.log(`id: ${id} --- email: ${email} --- password: ${password}`);
-  }
-}
-
 module.exports = {
   generateRandomString,
   getUserUrls,
   getUserByEmail,
-  printUsers,
   urlDatabase,
   users,
   userCheck

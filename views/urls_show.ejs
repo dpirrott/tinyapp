@@ -17,6 +17,9 @@
     <div class="card-footer text-muted">
       <div class="card-header">
         <h1>Edit</h1>
+        <% if (msg !== undefined) { %>
+          <p class="text-danger" style="margin:0;"><%= msg %></p>
+        <% } %>
         <form method="POST" class="form-inline justify-content-center" action="/urls/<%= shortURL %>" >
           <label for="newLongURL">Update Long URL: </label>
           <input class="form-control" name="newLongURL" placeholder="<%= longURL %>" type="text">
