@@ -213,7 +213,7 @@ app.get("/u/:shortURL", (req,res) => {
 });
 
 // Update longURL corresponding to id => (shortURL)
-app.post("/urls/:id", (req,res) => {
+app.put("/urls/:id", (req,res) => {
   const userID = req.session.userID;
   if (!userID || !users[userID]) {
     res.statusMessage = "Access denied: Must sign-in to reach this url";

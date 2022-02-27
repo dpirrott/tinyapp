@@ -20,7 +20,7 @@
         <% if (msg !== undefined) { %>
           <p class="text-danger" style="margin:0;"><%= msg %></p>
         <% } %>
-        <form method="POST" class="form-inline justify-content-center" action="/urls/<%= shortURL %>" >
+        <form method="POST" class="form-inline justify-content-center" action="/urls/<%= shortURL %>?_method=PUT" >
           <label for="newLongURL">Update Long URL: </label>
           <input class="form-control" name="newLongURL" placeholder="<%= longURL %>" type="text">
           <button class="btn btn-primary">Update</button>
