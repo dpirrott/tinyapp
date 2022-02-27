@@ -127,9 +127,12 @@ app.post("/urls", (req,res) => {
   }
   
   const shortURL = generateRandomString(6);
+  const date = Date().split(' ');
+  const dateDisplayed = `${date[1]}. ${date[2]}, ${date[3]} (${date[4]}) (${date[6][1]}${date[7][0]}${date[8][0]})`;
   urlDatabase[shortURL] = {
     longURL,
-    userID
+    userID,
+    dateDisplayed
   };
   res.redirect(`/urls/${shortURL}`);
 });
