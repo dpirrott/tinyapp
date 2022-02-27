@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
+const methodOverride = require('method-override');
 const {
   urlDatabase,
   users,
@@ -12,10 +13,14 @@ const {
   getUserUrls
 } = require('./helpers/helperFunctions');
 
-app.use(bodyParser.urlencoded({extended: true}), cookieSession({
-  name: 'session',
-  keys: ['super secret master key']
-}));
+app.use(
+  bodyParser.urlencoded({extended: true}), 
+  cookieSession({
+    name: 'session',
+    keys: ['super secret master key']
+  }),
+  methodOverride('_method')
+);
 
 app.set("view engine", "ejs");
 
@@ -157,7 +162,7 @@ app.get("/urls/new", (req,res) => {
 });
 
 // Deletes specified shortURL, if it exists, user must be logged in!
-app.post("/urls/:id/delete", (req,res) => {
+app.delete("/urls/:id", (req,res) => {
   const userID = req.session.userID;
   const userURLs = getUserUrls(userID, urlDatabase);
   const shortURL = req.params.id;
