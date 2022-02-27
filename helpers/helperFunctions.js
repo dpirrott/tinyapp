@@ -4,6 +4,22 @@ const urlDatabase = {};
 
 const users = {};
 
+const uniqueVisits = function() {
+  const uniqueVisitors = {};
+  const uniqueLogs = this.visits.filter(visit => {
+    if (uniqueVisitors[visit.userID]) {
+      return false;
+    }
+    uniqueVisitors[visit.userID] = visit.userID;
+    return true;
+  })
+  return uniqueLogs.length;
+};
+
+const visitCount = function() {
+  return this.visits.length;
+}
+
 // Gather only URLs that are unique to the user, return customized user url database
 const getUserUrls = function(userID, database) {
   const userURLs = {};
@@ -65,5 +81,7 @@ module.exports = {
   getUserByEmail,
   urlDatabase,
   users,
-  userCheck
+  userCheck,
+  visitCount,
+  uniqueVisits
 };

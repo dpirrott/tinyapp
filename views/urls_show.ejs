@@ -9,11 +9,32 @@
 <body>
   <%- include('partials/_header') %>
   <div class="card text-center">
-      <div class="card-header"></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-        <p class="card-text">Short URL: <a href="http://localhost:8080/u/<%= shortURL %>"><%= shortURL %></a></p>
-      </div>
+    <div class="card-header"></div>
+    <div class="card-body">
+      <h4 class="card-title">TinyURL for: <%= longURL %></h4>
+      <p class="card-text">Short URL: <a href="http://localhost:8080/u/<%= shortURL %>"><%= shortURL %></a></p>
+      <p class="card-text">Total Visits: <%= visitCount %></p>
+      <p class="card-text">Unique Visitors: <%= uniqueVisits %></p>
+    </div>
+    <div class="card-body">
+      <h4>Visitor Log</h4>
+      <table style="width: 50%; margin-left: auto; margin-right: auto;" class="table">
+        <thead>
+          <tr>
+            <th style="width: 50%;" scope="col">Visitor ID</th>
+            <th style="width: 50%;" scope="col">Date visited</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const visit of totalVisits) { %>
+            <tr>
+              <td style="width: 50%;"><%= visit.userID %></td>
+              <td style="width: 50%;"><%= visit.dateDisplayed %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
     <div class="card-footer text-muted">
       <div class="card-header">
         <h1>Edit</h1>

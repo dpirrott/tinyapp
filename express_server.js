@@ -10,7 +10,9 @@ const {
   users,
   userCheck,
   generateRandomString,
-  getUserUrls
+  getUserUrls,
+  visitCount,
+  uniqueVisits
 } = require('./helpers/helperFunctions');
 
 app.use(
@@ -137,7 +139,10 @@ app.post("/urls", (req,res) => {
   urlDatabase[shortURL] = {
     longURL,
     userID,
-    dateDisplayed
+    dateDisplayed,
+    visits: [],
+    visitCount,
+    uniqueVisits
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -192,9 +197,15 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.status(403).send("Action prohibited: If this url exists, you don't have access to it. <a href='/urls'>Return</a>");
   } else {
     const longURL = urlDatabase[shortURL].longURL;
+    const visitCount = urlDatabase[shortURL].visitCount();
+    const uniqueVisits = urlDatabase[shortURL].uniqueVisits();
+    const totalVisits = urlDatabase[shortURL].visits;
     const templateVars = {
       shortURL,
       longURL,
+      visitCount,
+      uniqueVisits,
+      totalVisits,
       user: users[req.session.userID],
       msg: null
     };
@@ -208,6 +219,23 @@ app.get("/u/:shortURL", (req,res) => {
   if (!(urlDatabase[shortURL])) {
     return res.redirect('/*');
   }
+  
+  // If not logged in, generate visitor ID for tracking
+  const userID = req.session.userID ? req.session.userID : generateRandomString(6);
+
+  // Don't count the creators visits, want to keep track of visitors
+  if (userID !== urlDatabase[shortURL].userID) {
+    // Create visit date
+    const date = Date().split(' ');
+    const dateDisplayed = `${date[1]}. ${date[2]}, ${date[3]} (${date[4]}) (${date[6][1]}${date[7][0]}${date[8][0]})`;
+    // Create visit object and push to url visits array
+    const visitData = {
+      userID,
+      dateDisplayed
+    }
+    urlDatabase[shortURL].visits.push(visitData);
+  }
+  
   const longURL = urlDatabase[shortURL].longURL;
   return res.redirect(longURL);
 });
