@@ -1,9 +1,5 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 
-const urlDatabase = {};
-
-const users = {};
-
 const uniqueVisits = function(visits) {
   const uniqueVisitors = {};
   const uniqueLogs = visits.filter(visit => {
@@ -78,8 +74,6 @@ module.exports = {
   generateRandomString,
   getUserUrls,
   getUserByEmail,
-  urlDatabase,
-  users,
   userCheck,
   visitCount,
   uniqueVisits

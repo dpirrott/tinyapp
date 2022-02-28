@@ -6,14 +6,14 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const methodOverride = require('method-override');
 const {
-  urlDatabase,
-  users,
   userCheck,
   generateRandomString,
   getUserUrls,
   visitCount,
   uniqueVisits
 } = require('./helpers/helperFunctions');
+const urlDatabase = require('./databases/urlDatabase');
+const users = require('./databases/usersDatabase');
 
 app.use(
   bodyParser.urlencoded({extended: true}), 
@@ -200,7 +200,6 @@ app.get("/urls/:shortURL", (req, res) => {
     const totalVisits = urlDatabase[shortURL].visits;
     const visitCount = urlDatabase[shortURL].visitCount(totalVisits);
     const uniqueVisits = urlDatabase[shortURL].uniqueVisits(totalVisits);
-    const totalVisits = urlDatabase[shortURL].visits;
     const templateVars = {
       shortURL,
       longURL,
