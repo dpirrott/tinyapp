@@ -4,20 +4,20 @@ const urlDatabase = {};
 
 const users = {};
 
-const uniqueVisits = function() {
+const uniqueVisits = function(visits) {
   const uniqueVisitors = {};
-  const uniqueLogs = this.visits.filter(visit => {
+  const uniqueLogs = visits.filter(visit => {
     if (uniqueVisitors[visit.userID]) {
       return false;
     }
     uniqueVisitors[visit.userID] = visit.userID;
     return true;
-  })
+  });
   return uniqueLogs.length;
 };
 
-const visitCount = function() {
-  return this.visits.length;
+const visitCount = function(visits) {
+  return visits.length;
 }
 
 // Gather only URLs that are unique to the user, return customized user url database
@@ -37,7 +37,6 @@ const getUserByEmail = function(email, database) {
       return database[userID];
     }
   }
-  return null;
 };
 
 // userCheck handles error checking for both POST /login and /register.

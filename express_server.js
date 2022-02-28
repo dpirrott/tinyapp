@@ -197,8 +197,9 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.status(403).send("Action prohibited: If this url exists, you don't have access to it. <a href='/urls'>Return</a>");
   } else {
     const longURL = urlDatabase[shortURL].longURL;
-    const visitCount = urlDatabase[shortURL].visitCount();
-    const uniqueVisits = urlDatabase[shortURL].uniqueVisits();
+    const totalVisits = urlDatabase[shortURL].visits;
+    const visitCount = urlDatabase[shortURL].visitCount(totalVisits);
+    const uniqueVisits = urlDatabase[shortURL].uniqueVisits(totalVisits);
     const totalVisits = urlDatabase[shortURL].visits;
     const templateVars = {
       shortURL,
