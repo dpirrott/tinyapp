@@ -223,18 +223,15 @@ app.get("/u/:shortURL", (req,res) => {
   // If not logged in, generate visitor ID for tracking
   const userID = req.session.userID ? req.session.userID : generateRandomString(6);
 
-  // Don't count the creators visits, want to keep track of visitors
-  if (userID !== urlDatabase[shortURL].userID) {
-    // Create visit date
-    const date = Date().split(' ');
-    const dateDisplayed = `${date[1]}. ${date[2]}, ${date[3]} (${date[4]}) (${date[6][1]}${date[7][0]}${date[8][0]})`;
-    // Create visit object and push to url visits array
-    const visitData = {
-      userID,
-      dateDisplayed
-    }
-    urlDatabase[shortURL].visits.push(visitData);
+  // Create visit date
+  const date = Date().split(' ');
+  const dateDisplayed = `${date[1]}. ${date[2]}, ${date[3]} (${date[4]}) (${date[6][1]}${date[7][0]}${date[8][0]})`;
+  // Create visit object and push to url visits array
+  const visitData = {
+    userID,
+    dateDisplayed
   }
+  urlDatabase[shortURL].visits.push(visitData);
   
   const longURL = urlDatabase[shortURL].longURL;
   return res.redirect(longURL);
